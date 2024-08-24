@@ -54,7 +54,7 @@ const onSubmit = handleSubmit(async values => {
 
 const clear = () => {
   if (isUpdating) {
-    throw new Error("Cannot call clear when updating");
+    throw new Error("Can not call clear when updating");
   }
   title.value = undefined;
   url.value = undefined;
@@ -67,37 +67,25 @@ defineExpose({
 </script>
 
 <template>
-  <div>
-    <div class="text-sm mb-4 text-zinc-500" v-if="!isUpdating">
-      Create a hook to start receiving events immediatly. <br>
-      Use
-      <a class="underline text-blue-500" href="https://atlas.thenirvanalabs.com/oauth2/jwks" target="_blank">this</a>
-      JWKs RSA key to authorise requests.
+  <form class="flex flex-col items-start" @submit="onSubmit">
+    <div class="flex flex-col justify-items-start w-4/5">
+      <label class="text-sm flex" for="title">Title <span class="text-rose-500">*</span></label>
+      <div class="flex">
+        <input id="title" name="title" class="input-custom" placeholder="My External ATS Provider" type="text"
+          v-model="title" :disabled="isSubmitting" />
+        <div class="text-xs mt-1 text-rose-500">{{ errors.title }}</div>
+      </div>
     </div>
-
-    <form class="flex flex-col items-start" @submit="onSubmit">
-
-      <div class="flex flex-col justify-items-start w-4/5">
-        <label class="block text-sm flex" for="title">Title <span class="text-rose-500">*</span></label>
-        <div class="flex">
-          <input id="title" class="input-custom" placeholder="My External ATS Provider" type="text" v-model="title"
-            :disabled="isSubmitting" />
-          <div class="text-xs mt-1 text-rose-500">{{ errors.title }}</div>
-        </div>
+    <div class="flex flex-col justify-items-start w-4/5 my-4">
+      <label class="flex text-sm" for="url">URL <span class="text-rose-500">*</span></label>
+      <div class="flex">
+        <input id="url" name="url" class="input-custom" placeholder="https://ats-provider.com/api/register-event"
+          type="url" v-model="url" :disabled="isSubmitting" />
+        <div class="text-xs mt-1 text-rose-500">{{ errors.url }}</div>
       </div>
-
-      <div class="flex flex-col justify-items-start w-4/5 mt-4">
-        <label class="flex block text-sm" for="url">URL <span class="text-rose-500">*</span></label>
-        <div class="flex">
-          <input id="url" class="input-custom" placeholder="https://ats-provider.com/api/register-event" type="url"
-            v-model="url" :disabled="isSubmitting" />
-          <div class="text-xs mt-1 text-rose-500">{{ errors.url }}</div>
-        </div>
-      </div>
-
-      <button class="flex btn btn-sm mt-4 bg-zinc-900 hover:bg-zinc-800 text-white" :disabled="isSubmitting" type="submit">
-        {{ isUpdating ? "Save" : "Create" }}
-      </button>
-    </form>
-  </div>
+    </div>
+    <InputButton :disabled="isSubmitting" type="submit">
+      {{ isUpdating ? "Save" : "Create" }}
+    </InputButton>
+  </form>
 </template>

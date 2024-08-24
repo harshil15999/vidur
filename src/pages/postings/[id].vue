@@ -9,14 +9,11 @@ const {
 const {
   data: posting
 } = usePublicPosting(id);
-const {
-  data: generalSettings
-} = await useGeneralSettings('organizationConfig');
 
-const orgName = computed(() => generalSettings.value?.organization.name);
+const careerSite = usePublicCareerSiteSettings();
 
 useHead({
-  title: () => `${posting.value?.title} | ${orgName.value}`,
+  title: () => `${posting.value?.title} | ${careerSite.value.name}`,
 })
 
 const tags = computed<string[]>(() => {
@@ -42,6 +39,7 @@ const apply = async () => {
     isApplying.value = false;
   }
 }
+
 </script>
 
 <template>
@@ -52,10 +50,10 @@ const apply = async () => {
         <!-- Content -->
         <div class="w-full">
           <div class="mb-6">
-            <NuxtLink class="btn-sm px-3 bg-white border-zinc-200 hover:border-zinc-300 text-zinc-600 border" to="/">
+            <InputButton as="NuxtLink" variant="outline" to="/">
               <Icon class="fill-current text-zinc-500 mr-2" name="mdi:arrow-left" />
               <span>Back To Jobs</span>
-            </NuxtLink>
+            </InputButton>
           </div>
           <div class="text-sm text-zinc-500 italic mb-2">
             Posted {{ formatDate(new Date(posting.updatedAt)) }}
@@ -72,7 +70,7 @@ const apply = async () => {
               <div class="inline-flex mb-3">
                 <img class="w-16 h-16 rounded-full" src="/company-logo.png" width="64" height="64" alt="Nirvana Labs" />
               </div>
-              <div class="text-lg font-bold text-zinc-800 mb-1">{{ orgName }}</div>
+              <div class="text-lg font-bold text-zinc-800 mb-1">{{ careerSite.name }}</div>
             </div>
             <div class="space-y-4 sm:flex sm:space-y-0 sm:space-x-2">
               <div class="flex w-full items-center justify-center text-green-500 space-x-2"
@@ -80,10 +78,10 @@ const apply = async () => {
                 <Icon name="teenyicons:tick-circle-solid" class="w-4 h-4" />
                 <span>Applied</span>
               </div>
-              <button class="btn w-full bg-zinc-900 hover:bg-zinc-800 text-white" @click="apply" :disabled="isApplying"
-                v-else>Apply Today
+              <InputButton class="w-full" @click="apply" :disabled="isApplying" v-else>
+                Apply Today
                 <Icon class="fill-current ml-1" name="mdi:arrow-right" />
-              </button>
+              </InputButton>
             </div>
           </div>
 
@@ -97,11 +95,8 @@ const apply = async () => {
               </div>
             </div>
           </div>
-
           <hr class="my-6 border-t border-zinc-100" />
-
-          <p class="w-full" style="white-space: pre-line;">{{ posting.contents }}</p>
-
+          <Editor :read-only="true" v-model="posting.contents" />
         </div>
 
         <!-- Sidebar -->
@@ -113,7 +108,7 @@ const apply = async () => {
               <div class="inline-flex mb-3">
                 <img class="w-16 h-16 rounded-full" src="/company-logo.png" width="64" height="64" alt="Company 01" />
               </div>
-              <div class="text-lg font-bold text-zinc-800 mb-1">{{ orgName }}</div>
+              <div class="text-lg font-bold text-zinc-800 mb-1">{{ careerSite.name }}</div>
             </div>
             <div class="space-y-2">
               <div class="flex w-full items-center justify-center text-green-500 space-x-2"
@@ -122,10 +117,10 @@ const apply = async () => {
                 <span>Applied</span>
               </div>
 
-              <button class="btn w-full bg-zinc-900 hover:bg-zinc-800 text-white" @click="apply" :disabled="isApplying"
-                v-else>Apply Today
+              <InputButton class="w-full" @click="apply" :disabled="isApplying" v-else>
+                Apply Today
                 <Icon class="fill-current ml-1" name="mdi:arrow-right" />
-              </button>
+              </InputButton>
             </div>
           </div>
 
@@ -146,3 +141,7 @@ const apply = async () => {
     </div>
   </div>
 </template>
+
+<style>
+@import 'quill/dist/quill.snow.css';
+</style>

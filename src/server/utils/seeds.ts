@@ -14,8 +14,8 @@ const seed1: SeedFn = async (ctx, _) => {
       value: '{}',
     },
     {
-      key: 'organizationConfig',
-      value: '{}',
+      key: 'careerSiteConfig',
+      value: '{ "links": [], "overview": { "socials": [] } }',
     },
   ]);
 };
@@ -31,8 +31,8 @@ const seed2: SeedFn = async (ctx, payload) => {
     {
       key: 'firstSetupAccessKey',
       value: payload.startKey,
-    }
+    },
   ]);
-}
+};
 
 export const seeds = [seed1, seed2];

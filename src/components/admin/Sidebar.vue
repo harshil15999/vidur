@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const { url } = useRemoteAsset("orgImage");
+const careerSiteSettings = usePublicCareerSiteSettings();
+const logoURL = computed(() => useRemoteAsset(careerSiteSettings.value.logo).url);
 </script>
 
 <template>
@@ -7,16 +8,9 @@ const { url } = useRemoteAsset("orgImage");
     class="flex fixed top-0 left-0 flex-col px-4 py-6 border-b md:border-b-0 md:border-r border-zinc-200 max-w-60 h-screen">
     <div class="flex flex-col">
       <!-- Company Profile -->
-      <div
-        class="flex px-2 py-2 justify-between rounded-xl text-zinc-600 border hover:bg-zinc-50 hover:border-zinc-200 space-x-2">
-        <div class="flex items-center">
-          <img class="rounded-lg w-6 border border-zinc-200" :src="url"
-            alt="avatar" />
-          <span class="text-xs ml-2 truncate font-noto">The Nirvana Labs</span>
-        </div>
-        <div class="flex items-center text-zinc-600">
-          <Icon class="w-5 h-5 fill-current" name="icon-park-outline:down" />
-        </div>
+      <div class="flex items-center">
+        <img class="rounded-lg w-8 border border-zinc-200" :src="logoURL" alt="avatar" />
+        <span class="font-bold ml-2 truncate font-noto">{{ careerSiteSettings.name }}</span>
       </div>
       <!-- Home -->
       <div class="text-xs text-zinc-500 mb-2 mt-6">Home</div>
@@ -43,8 +37,8 @@ const { url } = useRemoteAsset("orgImage");
             premium
           </div>
         </div>
-        <div class="text-xs mt-2 text-zinc-500">Get access to AI powered profiles and People's Search.</div>
-        <button class="text-xs py-2 px-4 rounded-xl bg-zinc-900 mt-2 text-zinc-50">Upgrade Now</button>
+        <div class="text-xs my-2 text-zinc-500">Get access to AI powered profiles and People's Search.</div>
+        <InputButton size="sm">Upgrade Now</InputButton>
       </div>
       <div class="flex justify-between mt-4">
         <div class="text-zinc-900 text-sm">v.0.0.1</div>

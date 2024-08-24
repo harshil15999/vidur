@@ -72,6 +72,7 @@ const onSubmit = handleSubmit(async values => {
   }
 })
 
+const isDeleting = ref(false);
 const onDelete = async () => {
   if (!isUpdating) {
     return;
@@ -80,7 +81,7 @@ const onDelete = async () => {
     if (errorBag.value) {
       console.log(errorBag.value);
     }
-    isSubmitting.value = true;
+    isDeleting.value = true;
     await $fetch('/api/posting', {
       method: 'DELETE',
       query: {
@@ -91,7 +92,7 @@ const onDelete = async () => {
   } catch (e) {
     console.error(e);
   } finally {
-    isSubmitting.value = false;
+    isDeleting.value = false;
   }
 }
 </script>
@@ -109,28 +110,34 @@ const onDelete = async () => {
       </div>
       <!-- Right: Actions -->
       <div class="flex items-center space-x-3">
-        <Icon name="ei:spinner-3" class="w-6 h-6 text-zinc-900 animate-spin" v-if="isSubmitting" />
-        <AbstractConfirmationBox title="Delete Posting?" content="You won't be able to undo this action. You will loose access to applicant list." @confirm="onDelete">
+        <AbstractConfirmationBox title="Delete Posting?" content="You won't be able to undo this action. You will loose access to applicant list." @confirm="onDelete" v-if="isUpdating">
           <template #input="{ open }">
-            <button class="btn border border-zinc-100" :disabled="isSubmitting" @click="open">
-              <Icon name="material-symbols:delete-outline" class="text-red-500 w-5 h-5" />
-            </button>
+            <InputButton variant="destructive" size="icon" @click="open" :disabled="isSubmitting">
+              <Icon name="material-symbols:delete-outline" class="h-4 w-4" />
+            </InputButton>
           </template>
         </AbstractConfirmationBox>
-        <div class="flex space-x-1 items-center border bg-zinc-100 p-2 rounded-xl">
+        <!-- <div class="flex space-x-1 items-center border bg-zinc-100 p-2 rounded-xl">
           <span class="text-sm">Publish?</span>
           <div class="form-switch">
-            <input type="checkbox" id="toggle1" class="sr-only" v-model="isPublished" :disabled="isSubmitting">
+            <input type="checkbox" id="toggle1" name="toggle1" class="sr-only" v-model="isPublished" :disabled="isSubmitting">
             <label class="bg-zinc-400" for="toggle1">
               <span class="bg-white shadow-sm" aria-hidden="true"></span>
               <span class="sr-only">Publish/Draft</span>
             </label>
           </div>
-        </div>
-        <button class="btn bg-zinc-900 hover:bg-zinc-800 text-white flex space-x-2" @click="onSubmit">
-          <Icon name="lets-icons:save" class="w-4 h-4" />
-          <span>Save Changes</span>
-        </button>
+        </div> -->
+        <InputSwitch label="Publish?" v-model="isPublished"/>
+        <AbstractConfirmationBox title="Save Posting?" content="Are you sure you want to save the changes?" @confirm="onSubmit">
+          <template #input="{ open }">
+            <InputButton :disabled="isSubmitting" @click="open">
+              <div class="flex spece-x-2 items-center">
+                <Icon name="lets-icons:save" class="w-3 h-3 mr-1" />
+                <span>Save</span>
+              </div>
+            </InputButton>
+          </template>
+        </AbstractConfirmationBox>
       </div>
     </div>
     <!-- Input Section -->
@@ -139,20 +146,24 @@ const onDelete = async () => {
         <div class="mx-auto mt-4">
           <div>
             <label class="block text-sm font-medium mb-1" for="title">Title <span class="text-rose-500">*</span></label>
-            <input id="title" class="form-input w-full" type="text" placeholder="Senior Software Engineer"
+            <input id="title" name="title" class="form-input w-full" type="text" placeholder="Senior Software Engineer"
               v-model="title" :disabled="isSubmitting" />
             <div class="text-xs mt-1 text-rose-500">{{ errors.title }}</div>
           </div>
           <div class="mt-4">
             <label class="block text-sm font-medium mb-1" for="tags-csv">Tags (CSV)</label>
-            <input id="tags-csv" class="form-input w-full" type="text" placeholder="Remote, Full Time, San Fransisco"
+            <input id="tags-csv" name="tags-csv" class="form-input w-full" type="text" placeholder="Remote, Full Time, San Fransisco"
               v-model="tagsCSV" :disabled="isSubmitting" />
             <div class="text-xs mt-1 text-rose-500">{{ errors.tagsCSV }}</div>
           </div>
           <div class="mt-4">
             <label class="block text-sm font-medium mb-1" for="jobdescription">Job Description</label>
-            <textarea id="jobdescription" class="form-textarea w-full focus:border-zinc-300" rows="6" v-model="contents"
-              placeholder="We want someone who…" :disabled="isSubmitting"></textarea>
+            <ClientOnly>
+              <Editor placeholder="We are looking for someone who can..." v-model="contents" />
+              <template #fallback>
+                Loading editor...
+              </template>
+            </ClientOnly>
             <div class="text-xs mt-1 text-rose-500">{{ errors.contents }}</div>
           </div>
         </div>
@@ -160,3 +171,9 @@ const onDelete = async () => {
     </form>
   </div>
 </template>
+
+<style>
+h1 {
+  @apply text-4xl;
+}
+</style>
